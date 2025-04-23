@@ -13,7 +13,7 @@ VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 PHONE_NUMBER = os.getenv("PHONE_NUMBER")
 
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('Gemini 2.0 Flash-Lite')
+model = genai.GenerativeModel('gemini-2.0-flash')
 def ai_response(ask):
     response = model.generate_content(
         ask,
