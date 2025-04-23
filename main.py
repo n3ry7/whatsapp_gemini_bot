@@ -36,34 +36,38 @@ def check_webhook():
 				return Response("",403)
 		else:
 			return
-
-@app.route('/',methods=["POST"])
+			
+@app.route('/', methods=["POST"])
 def send_message():
-	if request.method == 'POST':
-		body = request.get_json()
-		print(body)
+    if request.method == 'POST':
+        body = request.get_json()
+        print(body)
 
-		if body["entry"][0]["changes"][0]['value']["messages"][0]["from"] == PHONE_NUMBER:
-			user_question = body["entry"][0]["changes"][0]['value']["messages"][0]["text"]["body"]
+        # Extract user number and message
+        user_number = body["entry"][0]["changes"][0]['value']["messages"][0]["from"]
+        user_question = body["entry"][0]["changes"][0]['value']["messages"][0]["text"]["body"]
 
-			response = ai_response(user_question)
-			url = "https://graph.facebook.com/v18.0/115446774859882/messages"
-			headers = {
-				f"Authorization": f"Bearer {WHAT_TOKEN}",
-				"Content-Type": "application/json"
-			}
-			data = {
-				"messaging_product": "whatsapp",
-				"to": PHONE_NUMBER,
-				"type": "text",
-				"text": {"body": response}
-			}
+        # Generate AI response
+        response_text = ai_response(user_question)
 
-			response = requests.post(url, json=data, headers=headers)
-			print(response.text)
-			return Response(status=200)
+        # Get phone_number_id from webhook data
+        phone_number_id = body["entry"][0]["changes"][0]['value']['metadata']['phone_number_id']
+        url = f"https://graph.facebook.com/v18.0/{phone_number_id}/messages"
 
+        headers = {
+            "Authorization": f"Bearer {WHAT_TOKEN}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "messaging_product": "whatsapp",
+            "to": user_number,  # Send to the user's number
+            "type": "text",
+            "text": {"body": response_text}
+        }
 
+        response = requests.post(url, json=data, headers=headers)
+        print(response.text)
+        return Response(status=200)
 
 
 if __name__ == '__main__':
