@@ -17,7 +17,7 @@ PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID") # Your Bot's phone number ID
 
 # --- Gemini Setup ---
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.0-flash-lite')
 
 def ai_response(ask):
     """Generates a response using the Gemini API."""
